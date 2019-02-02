@@ -1,0 +1,60 @@
+{
+  "error":{
+    "token":{
+      "fail": "Failed to authenticate token.",
+      "invalid": "Invalid accessToken"
+    },
+    "auth":{
+      "generic": "Authentication failed.",
+      "userNotExist": "Authentication failed. User not found",
+      "wrongPassword": "Authentication failed. Wrong password.",
+      "needAdminPermission": "Need to be admin for this action"
+    },
+    "user":{
+      "insert": "Failed to create user",
+      "update": "Failed to update user",
+      "updateImage": "Failed to update user profile image",
+      "requireImage": "image is required.",
+      "requiredEmail": "email is required.",
+      "requiredPassword": "password is required.",
+      "requiredName": "name is required.",
+      "mailExist": "Email already in use.",
+      "mustBeEmail": "Invalid email format",
+      "updateToken": "Failed to update user token",
+      "informationService": "User infomation service error",
+      "permissionsRequired": "permissions are required",
+      "typeRequired": "type is required",
+      "idRequired": "id is required",
+      "delete": "Failed to delete user",
+      "notFound": "User not found"
+    },
+    "genre":{
+      "nameRequired": "name is required",
+      "descriptionRequired": "description is required",
+      "insert": "Failed to create genre",
+      "genreIdRequired": "param id is required",
+      "update": "Failed to update genre",
+      "updateImage": "Failed to update genre image",
+      "requireImage": "image is required."
+    },
+    "movie":{
+      "nameRequired": "name is required",
+      "synopsisRequired": "synopsis is required",
+      "genreRequired": "genre is required",
+      "insert": "Failed to insert movie",
+      "movieIdRequired": "movie id param is required",
+      "update": "Failed to update movie",
+      "updateImage": "Failed to update movie image",
+      "requireImage": "image is required",
+      "reviewMessageRequired": "message is required",
+      "scoreIsRequired": "score is required",
+      "durationRequired": "duration is required"
+    }
+  },
+  "success":{
+    "user":{
+      "update": "User update successfully. ",
+      "delete": "Delete user succesfully"
+    }
+  }
+}

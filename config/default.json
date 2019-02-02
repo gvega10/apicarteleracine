@@ -1,0 +1,6 @@
+{
+	"awsBucketName":"cartelera-api-s3bucket",
+	"jwtSecret": "carteleraTokenSecret",
+    "jwtExp": "180d",
+    "connectionString": "mongodb://Admin:admin1234@ds131742.mlab.com:31742/cartelera_cine"
+}
