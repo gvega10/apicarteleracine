@@ -2,5 +2,6 @@
 	"awsBucketName":"cartelera-cine-s3-bucket",
 	"jwtSecret": "carteleraTokenSecret",
     "jwtExp": "180d",
-    "connectionString": "mongodb://gvega:chicho05@ds161144.mlab.com:61144/carteleracine"
+    "connectionString": "mongodb://gvega:chicho05@ds161144.mlab.com:61144/carteleracine",
+    "dbFirebase": "https://cartelera-2e734.firebaseio.com"
 }

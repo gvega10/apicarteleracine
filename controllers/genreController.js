@@ -10,6 +10,9 @@ module.exports = {
 			getAll:function(){
 				return genreDao.getAll();
 			},
+			getById: function(genreId){
+        		return genreDao.getById(genreId);
+    		},
 			delete:function(genreId){
 				return genreDao.delete(genreId);
 			}

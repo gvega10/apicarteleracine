@@ -26,6 +26,12 @@ module.exports = {
         moviewReview.id = moviewReview._id;
         return moviewReview.save();
     },
+    findReviewById:function(movieId){
+        return MoviewReviewModel.findOne({ 'id': movieId }).populate("user").execAsync();
+    },
+    updateMovieReview:function(movieReview){
+        return MoviewReviewModel.findOneAndUpdate({ 'movie': movieReview.movie,  'user': movieReview.user }, { $set: movieReview }, { new: true }).populate("user").execAsync();;
+    },
     getAllReviewsByMovie: function(movieId){
         return MoviewReviewModel.find({ 'movie': movieId }).populate("user").execAsync();
     },

@@ -11,7 +11,11 @@ var UserSchema = new Schema({
 	thumb_img: { type: String},
 	access_token: { type: String},
 	token_exp:{type: String},
+	fcm_token:{type: String},
 	admin: {type: Boolean, default: false},
+	subscription:{
+		genres: [{type: Schema.Types.ObjectId, ref: 'Genre'}]
+	},
 	creation_date:{ type: Date, default: Date.now }
 }, { collection : 'Users' });
 

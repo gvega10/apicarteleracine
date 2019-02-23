@@ -10,7 +10,10 @@ module.exports = {
         return GenreModel.findOneAndUpdateAsync({ 'id': genre.id }, { $set: genre }, { new: true });
     },
     getAll: function() {
-        return GenreModel.findAsync();
+        return GenreModel.find().lean().execAsync();
+    },
+    getById: function(genreId){
+        return GenreModel.findOneAsync({ 'id': genreId });
     },
     delete: function(genreId){
           return GenreModel.findOneAndRemoveAsync({ 'id': genreId});

@@ -7,8 +7,19 @@ const
     upload = multer({ storage: storage }),
     awsDao = require('../daos/awsDao'),
     imgDirectoryName = "movies_images",
+    config = require('config'),
     wordings = require('../utils/wordings.json'),
-    moviesController = require('../controllers/moviesController');
+    subscriptionController = require('../controllers/subscriptionController'),
+    moviesController = require('../controllers/moviesController'),
+    genreController = require('../controllers/genreController'),
+    firebase = require("firebase-admin"),
+    firebaseConfig = require("../config/firebaseConfig.json");
+
+    firebase.initializeApp({
+      credential: firebase.credential.cert(firebaseConfig),
+      databaseURL: (process.env.DB_FIREBASE) ? process.env.DB_FIREBASE : config.get('dbFirebase')
+    });
+
 
 module.exports = function(apiRoutes){
 
@@ -30,8 +41,35 @@ module.exports = function(apiRoutes){
 
         if(isAdmin){
             moviesController.save(newMovie).then(function(insertResult){
-                res.status(201);
-                res.json(insertResult);
+                genreController.getById(insertResult.genre).then(function(genre){
+                    insertResult.genre = genre;
+                    subscriptionController.getUserSubscriptedByGenre(insertResult.genre.id).then(function(result){
+                        console.log("Get tokens result");
+                        console.log(result);
+
+                        var payload = {
+                          notification: {
+                            title: insertResult.name,
+                            body: insertResult.synopsis
+                          },
+                          data:{
+                            "movie": JSON.stringify(insertResult)
+                          }
+                        };
+
+                        if(result.length > 0){
+                            var genreTokens = result[0].tokens;
+                            firebase.messaging().sendToDevice(genreTokens, payload).then(function(response) {
+                              console.log('Successfully sent message:', response);
+                            }).catch(function(error) {
+                              console.log('Error sending message:', error);
+                            });
+                        }
+
+                        res.status(201);
+                        res.json(insertResult);
+                    });
+                });
             }).catch(function(errResult){
                 res.status(500);
                 res.json({message:wordings.error.movie.insert, error: err});
@@ -112,8 +150,8 @@ module.exports = function(apiRoutes){
 
 
 
-    apiRoutes.post('/movies/:id/reviews',[
-        param('id').exists().withMessage(wordings.error.movie.movieIdRequired),
+    apiRoutes.post('/movies/reviews',[
+        check('id').exists().withMessage(wordings.error.movie.movieIdRequired),
         check('message').exists().withMessage(wordings.error.movie.reviewMessageRequired),
         check('score').exists().withMessage(wordings.error.movie.scoreIsRequired)
     ], function(req,res){
@@ -129,21 +167,34 @@ module.exports = function(apiRoutes){
 
         var review = {user : userId, message: messageReview, score: scoreReview, movie: movieId};
 
+        moviesController.updateMovieReview(review).then(function(reviewUpdateSuccess){
+          console.log("Review update?");
+          console.log(reviewUpdateSuccess);
+          if(reviewUpdateSuccess == null){
+              moviesController.saveMovieReview(review).then(function(reviewSaved){
+                    moviesController.findReviewById(reviewSaved.id).then(function(reviewSavedPopulated){
+                          moviesController.getMovieAverageScore(movieId).then(function(movieScore){
+                              moviesController.update({id:movieId, score: movieScore[0].score }).then(function(updateMovieSuccess){
+                                      console.log("Update movie score success");
+                                      res.status(200);
+                                      res.json(reviewSavedPopulated);
+                              });
+                           }).catch(function(err){
+                              console.log(err);
+                              res.status(500);
+                              res.json("Failed to save review");
+                           });
+                    });
+              });
+          }else{
+            res.status(200);
+            res.json(reviewUpdateSuccess);
+          }
 
-        moviesController.saveMovieReview(review).then(function(reviewSaved){
-               moviesController.getMovieAverageScore(movieId).then(function(movieScore){
-                  console.log("Movie score");
-                  console.log(movieScore);
-                  moviesController.update({id:movieId, score: movieScore[0].score }).then(function(updatedMovie){
-                       res.status(200);
-                       res.json(reviewSaved);
-                  });
-                 
-               }).catch(function(err){
-                  console.log(err);
-                  res.status(500);
-                  res.json("Failed to save review");
-               });
+        }).catch(function(err){
+            console.log(err);
+            res.status(500);
+            res.json("Failed to save review");
         });
     });
 

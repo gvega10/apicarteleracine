@@ -9,6 +9,7 @@ const
     awsDao = require('../daos/awsDao'),
     wordings = require('../utils/wordings.json'),
     userController = require('../controllers/userController'),
+    subscriptionController = require('../controllers/subscriptionController'),
     imgDirectoryName = "user_profile_image";
 
 module.exports = function(apiRoutes){
@@ -29,7 +30,35 @@ module.exports = function(apiRoutes){
     });
 
 
-    apiRoutes.put('/users/me/password',[
+  apiRoutes.put('/users/me/fmcToken',[
+      check('fcm_token').optional()
+  ],function(req, res) {
+       const errors = validationResult(req);
+       if (!errors.isEmpty()) {
+          return res.status(400).json({ errors: errors.mapped() });
+       }
+
+      const userToUpdate = matchedData(req);
+      var userId = req.userId;
+      userToUpdate.id = userId;
+
+      var subscription = {user:userId, user_fcm_token: userToUpdate.fcm_token};
+
+      userController.update(userToUpdate).then(function(userUpdate){
+          if(userUpdate){
+              subscriptionController.update(subscription).then(function(subscriptionResult){
+                  res.status(200);
+                  res.json(userUpdate);
+              });
+          }
+      }).catch(function(err){
+          res.status(500);
+          res.json({ message: wordings.error.user.updateImage, error: err});
+      });         
+  });
+
+
+  apiRoutes.put('/users/me/password',[
        check('password').exists().withMessage(wordings.error.user.requiredPassword),
      ], function(req,res){
        const errors = validationResult(req);1
@@ -78,4 +107,9 @@ module.exports = function(apiRoutes){
          res.json({ message: wordings.error.user.requireImage});
        }
      });
+
+     
+
+     
+     
 }

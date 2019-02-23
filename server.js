@@ -9,6 +9,7 @@ const
   genreRoutes = require('./routes/genresRoutes'),
   moviesRoutes = require('./routes/moviesRoutes'),
   publicRoutes = require('./routes/publicRoutes'),
+  subscriptionRoutes = require('./routes/subscriptionRoutes'),
   mongoose        = require('mongoose'),
   bluebirdPromise = require('bluebird'),
   express = require('express');
@@ -56,6 +57,7 @@ apiRoutes.use(tokenModule.congif());
 userRoutes(apiRoutes);
 genreRoutes(apiRoutes);
 moviesRoutes(apiRoutes);
+subscriptionRoutes(apiRoutes);
 
 app.use(apiRoutes);
 

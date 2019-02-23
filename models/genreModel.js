@@ -3,7 +3,7 @@ var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
 var GenreSchema = new Schema({
-	id: { type: String },
+	id: { type: String, trim: true},
  	name: { type: String},
   	description: { type: String},
 	img: { type: String},
